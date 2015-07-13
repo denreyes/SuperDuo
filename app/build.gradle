@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "it.jaschke.alexandria"
+        applicationId "com.example.android.tuterial"
         minSdkVersion 15
-        targetSdkVersion 21
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
@@ -20,6 +20,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+    lintOptions {
+        abortOnError false
+    }
     buildTypes {
         release {
             testCoverageEnabled = true
@@ -30,16 +33,19 @@ android {
         }
 
     }
-    lintOptions {
-        abortOnError false
-    }
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:design:22.2.0'
 //BARCODE SCANNER LIBRARY
     compile 'me.dm7.barcodescanner:zbar:1.7.2'
 //GLIDE LIBRARY
     compile 'com.github.bumptech.glide:glide:3.6.0'
-    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.android.support:support-v4:22.2.0'
+//BUTTERKNIFE
+    compile 'com.jakewharton:butterknife:7.0.1'
+//HDODENHOF's Circle Image View
+    compile 'de.hdodenhof:circleimageview:1.3.0'
 }
