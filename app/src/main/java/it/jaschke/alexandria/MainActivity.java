@@ -4,8 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -48,10 +50,32 @@ public class MainActivity extends AppCompatActivity implements Callback, Navigat
         }
         ButterKnife.bind(this);
         materialize();
+        title = getTitle();
+        setScreen(savedInstanceState);
 
         messageReciever = new MessageReciever();
         IntentFilter filter = new IntentFilter(MESSAGE_EVENT);
         LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever, filter);
+    }
+
+    private void setScreen(Bundle savedInstanceState) {
+        if(savedInstanceState == null) {
+            SharedPreferences sharedPrefs =
+                    PreferenceManager.getDefaultSharedPreferences(this);
+            String screen = sharedPrefs.getString(getString(R.string.pref_startScreen_key),
+                    getString(R.string.pref_startScreen_default));
+
+            Fragment nextFragment;
+            if (screen.equals(0 + ""))
+                nextFragment = new ListOfBooks();
+            else
+                nextFragment = new AddBook();
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, nextFragment)
+                    .addToBackStack((String) title)
+                    .commit();
+        }
     }
 
     private void materialize() {

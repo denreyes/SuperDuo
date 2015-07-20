@@ -42,6 +42,8 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
     private String ean;
     private String bookTitle;
     private ShareActionProvider shareActionProvider;
+    private Cursor c;
+    private MenuItem menuItem;
 
     public BookDetail(){
     }
@@ -83,8 +85,19 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.book_detail, menu);
 
-        MenuItem menuItem = menu.findItem(R.id.action_share);
+        menuItem = menu.findItem(R.id.action_share);
         shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+        loadFinishMenuInflated();
+    }
+
+    private void loadFinishMenuInflated() {
+        if(c!=null && menuItem !=null){
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text)+bookTitle);
+            shareActionProvider.setShareIntent(shareIntent);
+        }
     }
 
     @Override
@@ -105,15 +118,11 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
             return;
         }
 
+        c = data;
         bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.TITLE));
         txtFullBookTitle.setText(bookTitle);
 
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text)+bookTitle);
-        shareActionProvider.setShareIntent(shareIntent);
-
+        loadFinishMenuInflated();
         String bookSubTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.SUBTITLE));
         txtFullBookSubTitle.setText(bookSubTitle);
 
