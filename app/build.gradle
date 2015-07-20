@@ -40,7 +40,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:design:22.2.0'
 //BARCODE SCANNER LIBRARY
-    compile 'me.dm7.barcodescanner:zbar:1.7.2'
+    compile 'me.dm7.barcodescanner:zxing:1.7.2'
 //GLIDE LIBRARY
     compile 'com.github.bumptech.glide:glide:3.6.0'
     compile 'com.android.support:support-v4:22.2.0'

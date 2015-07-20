@@ -1,7 +1,6 @@
 package it.jaschke.alexandria;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -19,7 +18,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -44,7 +42,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     private final String EAN_CONTENT="eanContent";
     private static final String SCAN_FORMAT = "scanFormat";
     private static final String SCAN_CONTENTS = "scanContents";
-    private static final String TAG = "INTENT_TO_SCAN_ACTIVITY";
+
+    public static final String ISBN_CODE = "ISBN_BARCODE";
+    public static final int REQUEST_CODE_BARCODE_SCAN = 40000;
 
     private String mScanFormat = "Format:";
     private String mScanContents = "Contents:";
@@ -192,18 +192,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     @Override
     public void onClick(View view) {
         if(view == btnScan){
-            // This is the callback method that the system will invoke when your button is
-            // clicked. You might do this by launching another app or by including the
-            //functionality directly in this app.
-            // Hint: Use a Try/Catch block to handle the Intent dispatch gracefully, if you
-            // are using an external app.
-            //when you're done, remove the toast below.
-            Context context = getActivity();
-            CharSequence text = "This button should let you scan a book for its barcode!";
-            int duration = Toast.LENGTH_SHORT;
-
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
+            startActivityForResult(new Intent(getActivity(), BarcodeScannerActivity.class), REQUEST_CODE_BARCODE_SCAN);
         }
         else if(view == btnSave){
             edtEan.setText("");
@@ -214,6 +203,18 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             bookIntent.setAction(BookService.DELETE_BOOK);
             getActivity().startService(bookIntent);
             edtEan.setText("");
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (Activity.RESULT_OK == resultCode) {
+
+            if (REQUEST_CODE_BARCODE_SCAN == requestCode) {
+
+                edtEan.setText(data.getStringExtra(ISBN_CODE));
+            }
         }
     }
 }
