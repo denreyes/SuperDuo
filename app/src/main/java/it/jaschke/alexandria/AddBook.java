@@ -1,10 +1,14 @@
 package it.jaschke.alexandria;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -49,6 +53,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     private String mScanFormat = "Format:";
     private String mScanContents = "Contents:";
 
+    boolean mBroadcastIsRegistered;
+    View rootView;
+
 
 
     public AddBook(){
@@ -64,7 +71,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_add_book, container, false);
+        rootView = inflater.inflate(R.layout.fragment_add_book, container, false);
         ButterKnife.bind(this, rootView);
 
         initListeners();
@@ -215,6 +222,44 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
                 edtEan.setText(data.getStringExtra(ISBN_CODE));
             }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(!mBroadcastIsRegistered) {
+            getActivity().registerReceiver(informUser,
+                    new IntentFilter(BookService.BROADCAST_INFORM));
+            mBroadcastIsRegistered=true;
+        }
+    }
+
+    private BroadcastReceiver informUser = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Snackbar.make(rootView, intent.getStringExtra("INFORM_TITLE")+" added.", Snackbar.LENGTH_LONG)
+                    .setAction("Undo", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent bookIntent = new Intent(getActivity(), BookService.class);
+                            bookIntent.putExtra(BookService.EAN, edtEan.getText().toString());
+                            bookIntent.setAction(BookService.DELETE_BOOK);
+                            getActivity().startService(bookIntent);
+                            edtEan.setText("");
+                        }
+                    })
+                    .show();
+        }
+    };
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(mBroadcastIsRegistered){
+            getActivity().unregisterReceiver(informUser);
+            mBroadcastIsRegistered = false;
         }
     }
 }

@@ -36,10 +36,19 @@ public class BookService extends IntentService {
     public static final String FETCH_BOOK = "it.jaschke.alexandria.services.action.FETCH_BOOK";
     public static final String DELETE_BOOK = "it.jaschke.alexandria.services.action.DELETE_BOOK";
 
+    Intent seekIntent;
+    public static final String BROADCAST_INFORM = "it.jaschke.alexandria.services.informadd";
+
     public static final String EAN = "it.jaschke.alexandria.services.extra.EAN";
 
     public BookService() {
         super("Alexandria");
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        seekIntent = new Intent(BROADCAST_INFORM);
     }
 
     @Override
@@ -201,6 +210,8 @@ public class BookService extends IntentService {
         }
     }
 
+
+
     private void writeBackBook(String ean, String title, String subtitle, String desc, String imgUrl) {
         ContentValues values= new ContentValues();
         values.put(AlexandriaContract.BookEntry._ID, ean);
@@ -209,6 +220,10 @@ public class BookService extends IntentService {
         values.put(AlexandriaContract.BookEntry.SUBTITLE, subtitle);
         values.put(AlexandriaContract.BookEntry.DESC, desc);
         getContentResolver().insert(AlexandriaContract.BookEntry.CONTENT_URI,values);
+
+
+        seekIntent.putExtra("INFORM_TITLE", title);
+        sendBroadcast(seekIntent);
     }
 
     private void writeBackAuthors(String ean, JSONArray jsonArray) throws JSONException {
