@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -107,12 +109,16 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                     clearFields();
                     return;
                 }
-                //Once we have an ISBN, start a book intent
-                Intent bookIntent = new Intent(getActivity(), BookService.class);
-                bookIntent.putExtra(BookService.EAN, ean);
-                bookIntent.setAction(BookService.FETCH_BOOK);
-                getActivity().startService(bookIntent);
-                AddBook.this.restartLoader();
+                if(isNetworkAvailable()) {
+                    //Once we have an ISBN, start a book intent
+                    Intent bookIntent = new Intent(getActivity(), BookService.class);
+                    bookIntent.putExtra(BookService.EAN, ean);
+                    bookIntent.setAction(BookService.FETCH_BOOK);
+                    getActivity().startService(bookIntent);
+                    AddBook.this.restartLoader();
+                }else{
+                    Snackbar.make(rootView, getResources().getText(R.string.network_unavailble), Snackbar.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -235,6 +241,25 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(mBroadcastIsRegistered){
+            getActivity().unregisterReceiver(informUser);
+            mBroadcastIsRegistered = false;
+        }
+    }
+
+    private boolean isNetworkAvailable() {
+
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
     private BroadcastReceiver informUser = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -253,13 +278,4 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                     .show();
         }
     };
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if(mBroadcastIsRegistered){
-            getActivity().unregisterReceiver(informUser);
-            mBroadcastIsRegistered = false;
-        }
-    }
 }
