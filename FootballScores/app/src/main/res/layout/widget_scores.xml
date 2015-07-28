@@ -22,7 +22,7 @@
                 android:layout_height="match_parent"
                 android:text="@string/widget_headline1"
                 android:gravity="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:fontFamily="sans-serif-light"/>
 
             <ImageView
@@ -39,7 +39,7 @@
                 android:layout_height="match_parent"
                 android:text="@string/widget_headline2"
                 android:gravity="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:fontFamily="sans-serif-black" />
         </LinearLayout>
 

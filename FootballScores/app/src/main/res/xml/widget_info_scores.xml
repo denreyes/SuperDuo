@@ -2,4 +2,5 @@
     android:initialLayout="@layout/widget_scores"
     android:minHeight="@dimen/widget_today_default_height"
     android:minWidth="@dimen/widget_today_default_width"
-    android:updatePeriodMillis="0" />
+    android:updatePeriodMillis="0"
+    android:resizeMode="horizontal|vertical"/>
