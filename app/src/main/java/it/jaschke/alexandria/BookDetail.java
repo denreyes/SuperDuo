@@ -130,9 +130,13 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
         txtFullBookDesc.setText(desc);
 
         String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
-        String[] authorsArr = authors.split(",");
-        txtAuthors.setLines(authorsArr.length);
-        txtAuthors.setText(authors.replace(",", "\n"));
+        if(authors!=null) {
+            String[] authorsArr = authors.split(",");
+            txtAuthors.setLines(authorsArr.length);
+            txtAuthors.setText(authors.replace(",", "\n"));
+        }else{
+            txtAuthors.setText("Author Unknown");
+        }
         String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
         if(Patterns.WEB_URL.matcher(imgUrl).matches()){
             Glide.with(this)
