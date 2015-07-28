@@ -100,6 +100,8 @@ public class BookService extends IntentService {
 
         bookEntry.close();
 
+
+
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String bookJsonString = null;
